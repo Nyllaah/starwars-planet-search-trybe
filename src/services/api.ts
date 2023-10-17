@@ -1,9 +1,9 @@
 export async function fetchPlanets() {
   try {
     const response = await fetch('https://swapi.dev/api/planets');
-    const data = response.json();
-    return await data;
+    const data = await response.json();
+    return data.results;
   } catch (error: any) {
-    throw new Error(error.message);
+    throw new Error(`Failed to fetch: ${error.message}`);
   }
 }
