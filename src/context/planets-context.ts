@@ -1,8 +1,4 @@
 import { createContext } from 'react';
-
-type PlanetsContextValue = {
-  planets: any[],
-  isLoading: boolean,
-};
+import { PlanetsContextValue } from '../types';
 
 export const PlanetsContext = createContext({} as PlanetsContextValue);

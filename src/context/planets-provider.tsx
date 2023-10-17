@@ -1,14 +1,21 @@
 import { useEffect, useState } from 'react';
 import { fetchPlanets } from '../services/api';
 import { PlanetsContext } from './planets-context';
-
-type PlanetsContextProps = {
-  children: React.ReactNode,
-};
+import { PlanetType, PlanetsContextProps } from '../types';
 
 function PlanetsProvider({ children }: PlanetsContextProps) {
-  const [planets, setPlanets] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [planets, setPlanets] = useState<PlanetType[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [nameFilter, setNameFilter] = useState<string>('');
+
+  const filteredPlanets = planets.filter(
+    ({ name }) => name.match(new RegExp(nameFilter, 'i')),
+  );
+
+  const handleNameFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setNameFilter(value);
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -29,7 +36,11 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
   }, []);
 
   return (
-    <PlanetsContext.Provider value={ { planets, isLoading } }>
+    <PlanetsContext.Provider
+      value={
+      { planets: filteredPlanets, isLoading, nameFilter, handleNameFilter }
+}
+    >
       {children}
     </PlanetsContext.Provider>
   );
