@@ -1,33 +1,34 @@
 import { useContext } from 'react';
 import { PlanetsContext } from '../context/planets-context';
+import { PlanetType } from '../types';
 
 export default function Table() {
-  const { planets, isLoading } = useContext(PlanetsContext);
+  const { filteredPlanets, isLoading, noResults, planets } = useContext(PlanetsContext);
 
   if (isLoading) {
     return <span>Loading...</span>;
   }
 
-  // const formatHeader = (header: string) => {
-  //   const words = header.split('_');
-  //   const capWords = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
-  //   return capWords.join(' ');
-  // };
+  const formatHeader = (header: string) => {
+    const words = header.split('_');
+    const capWords = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+    return capWords.join(' ');
+  };
 
-  // const headers = Object.keys(planets[0]).map((header) => formatHeader(header));
+  const headers = Object.keys(planets[0]).map((header) => formatHeader(header));
 
   return (
-    planets.length === 0 ? <span>Nothing found...</span>
+    noResults ? <span>Nothing found...</span>
       : (
         <table>
-          {/* <thead>
-        <tr>
-          {headers.map((header) => {
-            return <th key={ header }>{ header }</th>;
-          })}
-        </tr>
-      </thead> */}
           <thead>
+            <tr>
+              {headers.map((header) => {
+                return <th key={ header }>{ header }</th>;
+              })}
+            </tr>
+          </thead>
+          {/* <thead>
             <tr>
               <th>Name</th>
               <th>Rotation Period</th>
@@ -43,21 +44,9 @@ export default function Table() {
               <th>Edited</th>
               <th>Url</th>
             </tr>
-          </thead>
-          {/* <tbody>
-        {planets.length === 0 ? <span>Nothing found...</span>
-          : planets.map((planet) => {
-            return (
-              <tr key={ `${planet.name}-tr` }>
-                {Object.keys(planets[0]).map((header) => {
-                  return <td key={ planet[header] }>{planet[header]}</td>;
-                })}
-              </tr>
-            );
-          })}
-      </tbody> */}
+          </thead> */}
           <tbody>
-            {planets.map((planet) => {
+            {filteredPlanets.map((planet: PlanetType) => {
               return (
                 <tr key={ `${planet.name}-tr` }>
                   {Object.keys(planets[0]).map((header) => {
