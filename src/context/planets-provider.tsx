@@ -11,7 +11,7 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
   const [filters, setFilters] = useState<FiltersType>({
     nameFilter: '',
     columnFilter: 'population',
-    comparisonFilter: '>',
+    comparisonFilter: 'maior que',
     valueFilter: 0,
   });
   const [savedFilters, setSavedFilters] = useState<FiltersType[]>([]);
@@ -112,15 +112,15 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
     const filtersList = [...savedFilters, filters];
     let filtered: PlanetType[] = [];
     filtersList.forEach(({ columnFilter, comparisonFilter, valueFilter }) => {
-      if (comparisonFilter === '>') {
+      if (comparisonFilter === 'maior que') {
         filtered = filteredPlanets.filter((planet) => (
           +planet[columnFilter] > +valueFilter
         ));
-      } else if (comparisonFilter === '<') {
+      } else if (comparisonFilter === 'menor que') {
         filtered = filteredPlanets.filter((planet) => (
           +planet[columnFilter] < +valueFilter
         ));
-      } else if (comparisonFilter === '=') {
+      } else if (comparisonFilter === 'igual a') {
         filtered = filteredPlanets.filter((planet) => (
           +planet[columnFilter] === +valueFilter
         ));
