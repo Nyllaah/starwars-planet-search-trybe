@@ -16,23 +16,6 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
   });
   const [savedFilters, setSavedFilters] = useState<FiltersType[]>([]);
 
-  // const { columnFilter, comparisonFilter, valueFilter } = filters;
-
-  // const filteredPlanets = planets.filter(
-  //   ({ name }) => name.match(new RegExp(filters.nameFilter, 'i')),
-  // );
-
-  // if (comparisonFilter === '>') {
-  //   filteredPlanets = planets.filter((planet) => +planet[columnFilter] > +valueFilter);
-  //   console.log(filteredPlanets);
-  // } else if (comparisonFilter === '<') {
-  //   filteredPlanets = planets.filter((planet) => +planet[columnFilter] < +valueFilter);
-  // } else if (comparisonFilter === '=') {
-  //   filteredPlanets = planets.filter((planet) => (
-  //     +planet[columnFilter] === +valueFilter
-  //   ));
-  // }
-
   useEffect(() => {
     async function fetchData() {
       try {
@@ -77,37 +60,6 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
     filterByName(value);
   };
 
-  const filterPlanets = (filterList) => {
-    filterList.forEach(({ columnFilter, comparisonFilter, valueFilter }) => {
-      // let filtered: PlanetType[] = [];
-      if (comparisonFilter === '>') {
-        const filtered = filteredPlanets.filter((planet) => (
-          +planet[columnFilter] > +valueFilter
-        ));
-        setFilteredPlanets(filtered);
-        console.log(filtered);
-      } else if (comparisonFilter === '<') {
-        const filtered = filteredPlanets.filter((planet) => (
-          +planet[columnFilter] < +valueFilter
-        ));
-        setFilteredPlanets(filtered);
-      } else if (comparisonFilter === '=') {
-        const filtered = filteredPlanets.filter((planet) => (
-          +planet[columnFilter] === +valueFilter
-        ));
-        setFilteredPlanets(filtered);
-      }
-
-      setSavedFilters(filterList);
-      // if (filtered.length === 0) {
-      //   setNoResults(true);
-      // } else {
-      //   setFilteredPlanets(filtered);
-      //   setNoResults(false);
-      // }
-    });
-  };
-
   const handleFilterBtn = () => {
     const filtersList = [...savedFilters, filters];
     let filtered: PlanetType[] = [];
@@ -126,8 +78,13 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
         ));
       }
 
-      setFilteredPlanets(filtered);
-      setSavedFilters(filtersList);
+      if (filtered.length === 0) {
+        setNoResults(true);
+      } else {
+        setFilteredPlanets(filtered);
+        setSavedFilters(filtersList);
+        setNoResults(false);
+      }
     });
   };
 

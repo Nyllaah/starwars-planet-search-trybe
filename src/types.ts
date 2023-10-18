@@ -23,6 +23,7 @@ export type FiltersType = {
 };
 
 export type PlanetsContextValue = {
+  filteredPlanets: PlanetType[],
   planets: PlanetType[],
   isLoading: boolean,
   handleNameFilter: (e: React.ChangeEvent<HTMLInputElement>) => void,
