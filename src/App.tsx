@@ -1,11 +1,30 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import './App.css';
 import Table from './components/Table';
 import { PlanetsContext } from './context/planets-context';
+import { ColumnFilterValue } from './types';
 
 function App() {
-  const { handleNameFilter, filters,
+  const { handleNameFilter, filters, setFilters,
     handleFilters, handleFilterBtn, savedFilters } = useContext(PlanetsContext);
+
+  const filtersToCheck: ColumnFilterValue[] = ['population', 'orbital_period',
+    'diameter', 'rotation_period', 'surface_water'];
+
+  const filtersNotToDuplicate = savedFilters.map(({ columnFilter }) => columnFilter);
+
+  const filtersToRender: ColumnFilterValue[] = [];
+
+  filtersToCheck.forEach((filter: ColumnFilterValue) => {
+    if (!filtersNotToDuplicate.includes(filter)) {
+      filtersToRender.push(filter);
+    }
+  });
+
+  useEffect(() => {
+    setFilters({ ...filters, columnFilter: filtersToRender[0] });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [savedFilters.length]);
 
   return (
     <>
@@ -23,11 +42,9 @@ function App() {
             onChange={ handleFilters }
             value={ filters.columnFilter }
           >
-            <option value="population">population</option>
-            <option value="orbital_period">orbital_period</option>
-            <option value="diameter">diameter</option>
-            <option value="rotation_period">rotation_period</option>
-            <option value="surface_water">surface_water</option>
+            {filtersToRender.map((filter: string) => {
+              return <option key={ filter } value={ filter }>{filter}</option>;
+            })}
           </select>
           <select
             name="comparisonFilter"

@@ -96,6 +96,7 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
         handleNameFilter,
         noResults,
         filters,
+        setFilters,
         handleFilters,
         handleFilterBtn,
         savedFilters,
