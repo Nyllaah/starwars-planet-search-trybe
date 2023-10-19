@@ -8,13 +8,13 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
   const [noResults, setNoResults] = useState<boolean>(false);
   const [planets, setPlanets] = useState<PlanetType[]>([]);
   const [filteredPlanets, setFilteredPlanets] = useState<PlanetType[]>([]);
+  const [nameFilter, setNameFilter] = useState<string>('');
+  const [savedFilters, setSavedFilters] = useState<FiltersType[]>([]);
   const [filters, setFilters] = useState<FiltersType>({
-    nameFilter: '',
     columnFilter: 'population',
     comparisonFilter: 'maior que',
     valueFilter: 0,
   });
-  const [savedFilters, setSavedFilters] = useState<FiltersType[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -35,12 +35,10 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
     fetchData();
   }, []);
 
-  const handleFilters = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFilters({ ...filters, [name]: value });
-  };
+  const handleNameFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setNameFilter(value);
 
-  const filterByName = (value: string) => {
     const filtered = planets.filter(
       ({ name }) => name.match(new RegExp(value, 'i')),
     );
@@ -53,39 +51,46 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
     }
   };
 
-  const handleNameFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setFilters({ ...filters, nameFilter: value });
+  const filterPlanets = (filtersList: FiltersType[]) => {
+    let filtered = [...planets];
 
-    filterByName(value);
-  };
-
-  const handleFilterBtn = () => {
-    const filtersList = [...savedFilters, filters];
-    let filtered: PlanetType[] = [];
-    filtersList.forEach(({ columnFilter, comparisonFilter, valueFilter }) => {
-      if (comparisonFilter === 'maior que') {
-        filtered = filteredPlanets.filter((planet) => (
-          +planet[columnFilter] > +valueFilter
-        ));
-      } else if (comparisonFilter === 'menor que') {
-        filtered = filteredPlanets.filter((planet) => (
-          +planet[columnFilter] < +valueFilter
-        ));
-      } else if (comparisonFilter === 'igual a') {
-        filtered = filteredPlanets.filter((planet) => (
-          +planet[columnFilter] === +valueFilter
-        ));
-      }
+    if (filtersList.length === 0) {
+      setFilteredPlanets(filtered);
+      setFilters({
+        columnFilter: 'population',
+        comparisonFilter: 'maior que',
+        valueFilter: 0,
+      });
+    } else {
+      filtersList.forEach(({ columnFilter, comparisonFilter, valueFilter }) => {
+        if (comparisonFilter === 'maior que') {
+          filtered = filtered.filter((planet) => (
+            +planet[columnFilter] > +valueFilter
+          ));
+        } else if (comparisonFilter === 'menor que') {
+          filtered = filtered.filter((planet) => (
+            +planet[columnFilter] < +valueFilter
+          ));
+        } else if (comparisonFilter === 'igual a') {
+          filtered = filtered.filter((planet) => (
+            +planet[columnFilter] === +valueFilter
+          ));
+        }
+      });
+      setSavedFilters(filtersList);
+      setFilters({
+        columnFilter: filtersList[0].columnFilter,
+        comparisonFilter: 'maior que',
+        valueFilter: 0,
+      });
 
       if (filtered.length === 0) {
         setNoResults(true);
       } else {
         setFilteredPlanets(filtered);
-        setSavedFilters(filtersList);
         setNoResults(false);
       }
-    });
+    }
   };
 
   return (
@@ -95,11 +100,12 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
         isLoading,
         handleNameFilter,
         noResults,
+        nameFilter,
         filters,
         setFilters,
-        handleFilters,
-        handleFilterBtn,
         savedFilters,
+        setSavedFilters,
+        filterPlanets,
         planets }
 }
     >

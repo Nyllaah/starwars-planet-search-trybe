@@ -9,16 +9,14 @@ export default function Table() {
     return <span>Loading...</span>;
   }
 
-  const formatHeader = (header: string) => {
+  const headers = Object.keys(planets[0]).map((header) => {
     const words = header.split('_');
     const capWords = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
     return capWords.join(' ');
-  };
-
-  const headers = Object.keys(planets[0]).map((header) => formatHeader(header));
+  });
 
   return (
-    noResults ? <span>Nothing found...</span>
+    noResults ? <span>Nenhum resultado foi encontrado...</span>
       : (
         <table>
           <thead>
@@ -28,23 +26,7 @@ export default function Table() {
               })}
             </tr>
           </thead>
-          {/* <thead>
-            <tr>
-              <th>Name</th>
-              <th>Rotation Period</th>
-              <th>Orbital Period</th>
-              <th>Diameter</th>
-              <th>Climate</th>
-              <th>Gravity</th>
-              <th>Terrain</th>
-              <th>Surface Water</th>
-              <th>Population</th>
-              <th>Films</th>
-              <th>Created</th>
-              <th>Edited</th>
-              <th>Url</th>
-            </tr>
-          </thead> */}
+
           <tbody>
             {filteredPlanets.map((planet: PlanetType) => {
               return (

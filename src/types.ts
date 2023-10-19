@@ -21,7 +21,6 @@ export type ColumnFilterValue = 'population' | 'orbital_period'
 | 'diameter' | 'rotation_period' | 'surface_water';
 
 export type FiltersType = {
-  nameFilter: string,
   columnFilter: ColumnFilterValue,
   comparisonFilter: string,
   valueFilter: number,
@@ -38,6 +37,7 @@ export type PlanetsContextValue = {
   handleFilters:(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void,
   handleFilterBtn: () => void,
   savedFilters: FiltersType[],
+  setSavedFilters: Dispatch<SetStateAction<FiltersType[]>>,
 };
 
 export type PlanetsContextProps = {
