@@ -54,49 +54,36 @@ function PlanetsProvider({ children }: PlanetsContextProps) {
   const filterPlanets = (filtersList: FiltersType[]) => {
     let filtered = [...planets];
 
-    if (filtersList.length === 0) {
-      setFilteredPlanets(filtered);
-      setFilters({
-        columnFilter: 'population',
-        comparisonFilter: 'maior que',
-        valueFilter: 0,
-      });
-    } else {
-      filtersList.forEach(({ columnFilter, comparisonFilter, valueFilter }) => {
-        if (comparisonFilter === 'maior que') {
-          filtered = filtered.filter((planet) => (
-            +planet[columnFilter] > +valueFilter
-          ));
-        } else if (comparisonFilter === 'menor que') {
-          filtered = filtered.filter((planet) => (
-            +planet[columnFilter] < +valueFilter
-          ));
-        } else if (comparisonFilter === 'igual a') {
-          filtered = filtered.filter((planet) => (
-            +planet[columnFilter] === +valueFilter
-          ));
-        }
-      });
-      setSavedFilters(filtersList);
-      setFilters({
-        columnFilter: filtersList[0].columnFilter,
-        comparisonFilter: 'maior que',
-        valueFilter: 0,
-      });
-
-      if (filtered.length === 0) {
-        setNoResults(true);
-      } else {
-        setFilteredPlanets(filtered);
-        setNoResults(false);
+    filtersList.forEach(({ columnFilter, comparisonFilter, valueFilter }) => {
+      if (comparisonFilter === 'maior que') {
+        filtered = filtered.filter((planet) => (
+          +planet[columnFilter] > +valueFilter
+        ));
+      } else if (comparisonFilter === 'menor que') {
+        filtered = filtered.filter((planet) => (
+          +planet[columnFilter] < +valueFilter
+        ));
+      } else if (comparisonFilter === 'igual a') {
+        filtered = filtered.filter((planet) => (
+          +planet[columnFilter] === +valueFilter
+        ));
       }
+    });
+
+    if (filtered.length === 0) {
+      setNoResults(true);
+    } else {
+      setNoResults(false);
     }
+    setFilteredPlanets(filtered);
+    setSavedFilters(filtersList);
   };
 
   return (
     <PlanetsContext.Provider
       value={
       { filteredPlanets,
+        setFilteredPlanets,
         isLoading,
         handleNameFilter,
         noResults,

@@ -20,6 +20,11 @@ export type PlanetType = {
 export type ColumnFilterValue = 'population' | 'orbital_period'
 | 'diameter' | 'rotation_period' | 'surface_water';
 
+export type SortingType = {
+  columnSort: ColumnFilterValue,
+  sortingMethod: string,
+};
+
 export type FiltersType = {
   columnFilter: ColumnFilterValue,
   comparisonFilter: string,
@@ -31,11 +36,11 @@ export type PlanetsContextValue = {
   planets: PlanetType[],
   isLoading: boolean,
   handleNameFilter: (e: React.ChangeEvent<HTMLInputElement>) => void,
+  nameFilter: string,
   noResults: boolean,
+  filterPlanets: (filterList: FiltersType[]) => void
   filters: FiltersType,
   setFilters: Dispatch<SetStateAction<FiltersType>>,
-  handleFilters:(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void,
-  handleFilterBtn: () => void,
   savedFilters: FiltersType[],
   setSavedFilters: Dispatch<SetStateAction<FiltersType[]>>,
 };

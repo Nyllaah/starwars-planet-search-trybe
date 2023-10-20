@@ -1,8 +1,8 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import './App.css';
 import Table from './components/Table';
 import { PlanetsContext } from './context/planets-context';
-import { ColumnFilterValue } from './types';
+import { ColumnFilterValue, SortingType } from './types';
 
 function App() {
   const {
@@ -13,7 +13,14 @@ function App() {
     savedFilters,
     setSavedFilters,
     filterPlanets,
+    filteredPlanets,
+    setFilteredPlanets,
   } = useContext(PlanetsContext);
+
+  const [sorting, setSorting] = useState<SortingType>({
+    columnSort: 'population',
+    sortingMethod: '',
+  });
 
   const filtersToCheck: ColumnFilterValue[] = ['population', 'orbital_period',
     'diameter', 'rotation_period', 'surface_water'];
@@ -29,7 +36,11 @@ function App() {
   });
 
   useEffect(() => {
-    setFilters({ ...filters, columnFilter: filtersToRender[0] });
+    setFilters({
+      columnFilter: filtersToRender[0],
+      comparisonFilter: 'maior que',
+      valueFilter: 0,
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedFilters.length]);
 
@@ -50,16 +61,36 @@ function App() {
   };
 
   const deleteFilter = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const { id } = e.target;
+    const { id } = e.target as HTMLButtonElement;
     const filtersList = savedFilters.filter(({ columnFilter }) => {
       return columnFilter !== id;
     });
 
-    if (filtersList.length === 0) {
-      clearAllFilters();
-    } else {
-      filterPlanets(filtersList);
+    filterPlanets(filtersList);
+  };
+
+  const handleSortingIpts = (
+    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>,
+  ) => {
+    const { name, value } = e.target;
+    setSorting({ ...sorting, [name]: value });
+  };
+
+  const sortPlanets = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { columnSort, sortingMethod } = sorting;
+    let sortedList = [...filteredPlanets];
+
+    const unknownValues = sortedList.filter((planet) => planet[columnSort] === 'unknown');
+    sortedList = sortedList.filter((planet) => planet[columnSort] !== 'unknown');
+
+    if (sortingMethod === 'ASC') {
+      sortedList = sortedList.sort((a, b) => +a[columnSort] - +b[columnSort]);
+    } else if (sortingMethod === 'DESC') {
+      sortedList = sortedList.sort((a, b) => +b[columnSort] - +a[columnSort]);
     }
+
+    setFilteredPlanets([...sortedList, ...unknownValues]);
   };
 
   return (
@@ -79,7 +110,15 @@ function App() {
             value={ filters.columnFilter }
           >
             {filtersToRender.map((filter: string) => {
-              return <option key={ filter } value={ filter }>{filter}</option>;
+              return (
+                <option
+                  data-testid="column-filter-opt"
+                  key={ filter }
+                  value={ filter }
+                >
+                  {filter}
+                </option>
+              );
             })}
           </select>
           <select
@@ -88,9 +127,27 @@ function App() {
             onChange={ handleFilters }
             value={ filters.comparisonFilter }
           >
-            <option value="maior que">maior que</option>
-            <option value="menor que">menor que</option>
-            <option value="igual a">igual a</option>
+            <option
+              data-testid="comparison-filter-opt"
+              value="maior que"
+            >
+              maior que
+
+            </option>
+            <option
+              data-testid="comparison-filter-opt"
+              value="menor que"
+            >
+              menor que
+
+            </option>
+            <option
+              data-testid="comparison-filter-opt"
+              value="igual a"
+            >
+              igual a
+
+            </option>
           </select>
           <input
             type="number"
@@ -106,10 +163,58 @@ function App() {
 
           </button>
         </form>
+        <form onSubmit={ sortPlanets }>
+          <label htmlFor="column-sort">
+            Ordenar:
+            <select
+              name="columnSort"
+              id="column-sort"
+              data-testid="column-sort"
+              onChange={ handleSortingIpts }
+            >
+              {filtersToRender.map((filter: string) => {
+                return (
+                  <option
+                    data-testid="column-filter-opt"
+                    key={ filter }
+                    value={ filter }
+                  >
+                    {filter}
+                  </option>
+                );
+              })}
+            </select>
+          </label>
+          <label htmlFor="column-sort-input-asc">
+            <input
+              type="radio"
+              name="sortingMethod"
+              id="column-sort-input-asc"
+              data-testid="column-sort-input-asc"
+              value="ASC"
+              onChange={ handleSortingIpts }
+            />
+            Ascendente
+          </label>
+          <label htmlFor="column-sort-input-desc">
+            <input
+              type="radio"
+              name="sortingMethod"
+              id="column-sort-input-desc"
+              data-testid="column-sort-input-desc"
+              value="DESC"
+              onChange={ handleSortingIpts }
+            />
+            Descendente
+          </label>
+          <button data-testid="column-sort-button">Ordernar</button>
+        </form>
       </header>
 
       <main>
-        {savedFilters.length === 0 ? <span>Sem filtros aplicados</span>
+        {savedFilters.length === 0 ? (
+          <span data-testid="no-filters">Sem filtros aplicados</span>
+        )
           : (
             <>
               {savedFilters.map(({ columnFilter, comparisonFilter, valueFilter }) => {

@@ -31,8 +31,16 @@ export default function Table() {
             {filteredPlanets.map((planet: PlanetType) => {
               return (
                 <tr key={ `${planet.name}-tr` }>
-                  {Object.keys(planets[0]).map((header) => {
-                    return <td key={ planet[header] }>{planet[header]}</td>;
+                  {Object.keys(planets[0]).map((header, index) => {
+                    const keyName = header as keyof Omit<PlanetType, 'residents'>;
+                    return (
+                      <td
+                        data-testid={ header === 'name' ? 'planet-name' : '' }
+                        key={ `${planet[keyName]}-${index}` }
+                      >
+                        {planet[keyName]}
+                      </td>
+                    );
                   })}
                 </tr>
               );
