@@ -39,6 +39,7 @@ export type PlanetsContextValue = {
   nameFilter: string,
   noResults: boolean,
   filterPlanets: (filterList: FiltersType[]) => void
+  setFilteredPlanets: Dispatch<SetStateAction<PlanetType[]>>,
   filters: FiltersType,
   setFilters: Dispatch<SetStateAction<FiltersType>>,
   savedFilters: FiltersType[],
